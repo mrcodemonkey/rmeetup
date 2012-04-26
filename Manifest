@@ -8,6 +8,7 @@ lib/rmeetup/fetcher/base.rb
 lib/rmeetup/fetcher/cities.rb
 lib/rmeetup/fetcher/comments.rb
 lib/rmeetup/fetcher/events.rb
+lib/rmeetup/fetcher/open_events.rb
 lib/rmeetup/fetcher/groups.rb
 lib/rmeetup/fetcher/members.rb
 lib/rmeetup/fetcher/photos.rb
@@ -16,12 +17,14 @@ lib/rmeetup/fetcher/topics.rb
 lib/rmeetup/type.rb
 lib/rmeetup/type/city.rb
 lib/rmeetup/type/comment.rb
+lib/rmeetup/type/open_event.rb
 lib/rmeetup/type/event.rb
 lib/rmeetup/type/group.rb
 lib/rmeetup/type/member.rb
 lib/rmeetup/type/photo.rb
 lib/rmeetup/type/rsvp.rb
 lib/rmeetup/type/topic.rb
+
 spec/client_spec.rb
 spec/fetcher_spec.rb
 spec/fetchers/base_spec.rb
