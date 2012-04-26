@@ -7,6 +7,7 @@ require "rmeetup/fetcher/events"
 require "rmeetup/fetcher/groups"
 require "rmeetup/fetcher/comments"
 require "rmeetup/fetcher/photos"
+require "rmeetup/fetcher/open_events"
 
 module RMeetup
   module Fetcher
@@ -31,6 +32,8 @@ module RMeetup
                   Comments.new
                 when :photos
                   Photos.new
+                when :open_events
+                  OpenEvents.new
                 end
       end 
     end
