@@ -44,7 +44,16 @@ module RMeetup::FakeResponse
         File.read(File.join(TEST_ROOT, 'responses', 'events.json'))
       end
   end
-  
+
+
+  module OpenEvents
+    protected
+      def get_response(url)
+        File.read(File.join(TEST_ROOT, 'responses', 'open_events.json'))
+      end
+  end
+
+
   module Groups
     protected
       def get_response(url)

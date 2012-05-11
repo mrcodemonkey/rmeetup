@@ -24,7 +24,7 @@ module RMeetup
                   Members.new
                 when :rsvps       
                   Rsvps.new
-                when :events      
+                when :events
                   Events.new
                 when :groups      
                   Groups.new

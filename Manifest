@@ -31,6 +31,7 @@ spec/fetchers/base_spec.rb
 spec/fetchers/cities_spec.rb
 spec/fetchers/comments_spec.rb
 spec/fetchers/events_spec.rb
+spec/fetchers/open_events_spec.rb
 spec/fetchers/groups_spec.rb
 spec/fetchers/members_spec.rb
 spec/fetchers/photos_spec.rb
@@ -39,6 +40,8 @@ spec/fetchers/topics_spec.rb
 spec/responses/cities.json
 spec/responses/comments.json
 spec/responses/error.json
+
+spec/responses/open_events.json
 spec/responses/events.json
 spec/responses/groups.json
 spec/responses/members.json

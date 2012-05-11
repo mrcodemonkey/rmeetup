@@ -30,6 +30,7 @@ module RMeetup
         url = build_url(options)
         
         json = get_response(url)
+
         data = JSON.parse(json)
         
         # Check to see if the api returned an error
@@ -57,7 +58,13 @@ module RMeetup
         end
       
         def base_url
+
+         if @type == :open_events
+          "http://api.meetup.com/2/#{@type}.json/"
+         else
           "http://api.meetup.com/#{@type}.json/"
+         end
+
         end
         
         # Create a query string from an options hash
