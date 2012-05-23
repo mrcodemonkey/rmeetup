@@ -45,9 +45,9 @@ module RMeetup
       end
 =end
 
-      def time
-        DateTime.parse(self.open_event['time'])
-      end
+      #def time
+      #  DateTime.parse(self.open_event['time'])
+      #end
     end
   end
 end
