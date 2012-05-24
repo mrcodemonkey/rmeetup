@@ -21,6 +21,10 @@ module RMeetup
       def method_missing(id, *args)
         return self.rsvp[id.id2name]
       end
+
+      def id
+        return self.rsvp['id'].to_i
+      end
       
       # Special accessors that need typecasting or other parsing
       
