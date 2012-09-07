@@ -11,16 +11,16 @@ module RMeetup
         super "No Response was returned from the Meetup API."
       end
     end
-    
+
     # == RMeetup::Fetcher::Base
-    # 
-    # Base fetcher class that other fetchers 
+    #
+    # Base fetcher class that other fetchers
     # will inherit from.
     class Base
       def initialize
         @type = nil
       end
-      
+
       # Fetch and parse a response
       # based on a set of options.
       # Override this method to ensure
@@ -28,64 +28,123 @@ module RMeetup
       # for the request.
       def fetch(options = {})
         url = build_url(options)
-        
+
         json = get_response(url)
 
         data = JSON.parse(json)
-        
+
         # Check to see if the api returned an error
         raise ApiError.new(data['details'],url) if data.has_key?('problem')
-        
+
         collection = RMeetup::Collection.build(data)
-        
+
         # Format each result in the collection and return it
         collection.map!{|result| format_result(result)}
       end
-      
+
+
+      #deliver function to handle post request for rsvp
+      def deliver(options = {})
+
+        #puts "delivering ..."
+        url = "https://api.meetup.com/2/rsvp.json"
+
+        #puts "this is the #{url}"
+        #puts "these are the options #{options.to_yaml}"
+        response = post_response(url,options)
+
+        #puts response.to_yaml
+
+        #puts "delivered ..."
+
+        if response == "OK"
+          puts "rsvp ok"
+        else
+          puts response.to_yaml
+        end
+
+      end
+
+
+
+
+
       protected
-        # OVERRIDE this method to format a result section
-        # as per Result type.
-        # Takes a result in a collection and
-        # formats it to be put back into the collection.
-        def format_result(result)
-          result
-        end
-      
-        def build_url(options)
-          options = encode_options(options)
-          
-          base_url + params_for(options)
-        end
-      
-        def base_url
+      # OVERRIDE this method to format a result section
+      # as per Result type.
+      # Takes a result in a collection and
+      # formats it to be put back into the collection.
+      def format_result(result)
+        result
+      end
 
-         if @type == :open_events
+      def build_url(options)
+        options = encode_options(options)
+
+        base_url + params_for(options)
+      end
+
+      def base_url
+
+        if @type == :open_events
           "http://api.meetup.com/2/#{@type}.json/"
-         else
+        else
           "http://api.meetup.com/#{@type}.json/"
-         end
+        end
 
+      end
+
+      # Create a query string from an options hash
+      def params_for(options)
+        params = []
+        options.each do |key, value|
+          params << "#{key}=#{value}"
         end
-        
-        # Create a query string from an options hash
-        def params_for(options)
-          params = []
-          options.each do |key, value|
-            params << "#{key}=#{value}"
-          end
-          "?#{params.join("&")}"
+        "?#{params.join("&")}"
+      end
+
+      # Encode a hash of options to be used as request parameters
+      def encode_options(options)
+        options.each do |key,value|
+          options[key] = URI.encode(value.to_s)
         end
-        
-        # Encode a hash of options to be used as request parameters
-        def encode_options(options)
-          options.each do |key,value|
-            options[key] = URI.encode(value.to_s)
-          end
+      end
+
+      def get_response(url)
+        Net::HTTP.get_response(URI.parse(url)).body || raise(NoResponseError.new)
+
+
+      end
+
+      def post_response(url,options)
+        require 'net/https'
+
+        uri = URI.parse(url)
+
+        request = Net::HTTP::Post.new(uri.path)
+
+        #put options in form request
+        request.set_form_data('key'=>options[:key],'event_id'=>options[:event_id],'rsvp'=>options[:rsvp])
+
+        puts "this is the request #{request.to_yaml}"
+
+        httpr = Net::HTTP.new(uri.host,uri.port)
+        httpr.use_ssl=true
+
+        res = httpr.start {|http| http.request(request)}
+
+
+        case res
+          when Net::HTTPSuccess, Net::HTTPRedirection
+            # OK
+            return "OK"
+          else
+            #Net::HTTPServerException: 401 "Unauthorized"
+            return res.value
         end
-        
-        def get_response(url)
-          Net::HTTP.get_response(URI.parse(url)).body || raise(NoResponseError.new)
-        end
+
+      end
+
     end
   end
 end
