@@ -46,8 +46,13 @@ module RMeetup
       #deliver function to handle post request for rsvp
       def deliver(options = {})
 
-        #puts "delivering ..."
-        url = "https://api.meetup.com/2/rsvp.json"
+        #add access token if it exists
+        url = ""
+        if options['access_token']
+          url = "https://api.meetup.com/2/rsvp.json?#{options['access_token']}"
+        else
+          url = "https://api.meetup.com/2/rsvp.json"
+        end
 
         #puts "this is the #{url}"
         #puts "these are the options #{options.to_yaml}"
@@ -64,9 +69,6 @@ module RMeetup
         end
 
       end
-
-
-
 
 
       protected
@@ -124,7 +126,11 @@ module RMeetup
         request = Net::HTTP::Post.new(uri.path)
 
         #put options in form request
-        request.set_form_data('key'=>options[:key],'event_id'=>options[:event_id],'rsvp'=>options[:rsvp])
+        if options[:key]
+          request.set_form_data('key'=>options[:key],'event_id'=>options[:event_id],'rsvp'=>options[:rsvp])
+        else
+          request.set_form_data('event_id'=>options[:event_id],'rsvp'=>options[:rsvp])
+        end
 
         puts "this is the request #{request.to_yaml}"
 
