@@ -7,22 +7,22 @@ require 'rmeetup/collection'
 require 'rmeetup/fetcher'
 
 module RMeetup
-
+  
   # RMeetup Errors
   class NotConfiguredError < StandardError
     def initialize
       super "Please provide your Meetup API key before fetching data."
     end
   end
-
+  
   class InvalidRequestTypeError < StandardError
     def initialize(type)
       super "Fetch type '#{type}' not a valid."
     end
   end
-
+  
   # == RMeetup::Client
-  #
+  # 
   # Essentially a simple wrapper to delegate requests to
   # different fetcher classes who are responsible for fetching
   # and parsing their own responses.
@@ -30,7 +30,7 @@ module RMeetup
   #added open_vents and rsvp
 
   class Client
-    FETCH_TYPES = [:topics, :cities, :members, :rsvps, :events, :groups, :comments, :photos, :open_events]
+    FETCH_TYPES = [:topics, :cities, :members, :rsvps, :events, :groups, :comments, :photos, :open_events,:meetup_profiles]
     POST_TYPES = [:rsvps]
 
     # Meetup API Key
@@ -40,12 +40,15 @@ module RMeetup
     @@api_key = nil
     def self.api_key; @@api_key; end;
     def self.api_key=(key); @@api_key = key; end;
-
+    
     def self.fetch(type, options = {})
       check_configuration!
-
+      
       # Merge in all the standard options
       # Keeping whatever was passed in
+
+
+
       options = default_options.merge(options)
 
       if FETCH_TYPES.include?(type.to_sym)
@@ -55,7 +58,9 @@ module RMeetup
       else
         raise InvalidRequestTypeError.new(type)
       end
+
     end
+
 
 
 
@@ -68,8 +73,11 @@ module RMeetup
       options = default_options.merge(options)
 
       if POST_TYPES.include?(type.to_sym)
-        delivery = RMeetup::Fetcher.for(type)
-        return delivery.deliver(options)
+
+
+          rsvp = RMeetup::Fetcher.for(type)
+          return rsvp.rsvp_post(options)
+
 
       else
         raise InvalidRequestTypeError.new(type)
@@ -82,16 +90,16 @@ module RMeetup
 
 
     protected
-    def self.default_options
-      {
+      def self.default_options
+        {
           :key => api_key
-      }
-    end
-
-    # Raise an error if RMeetup has not been
-    # provided with an api key
-    def self.check_configuration!
-      raise NotConfiguredError.new unless api_key
-    end
+        }
+      end
+      
+      # Raise an error if RMeetup has not been
+      # provided with an api key
+      def self.check_configuration!
+        raise NotConfiguredError.new unless api_key
+      end
   end
 end
