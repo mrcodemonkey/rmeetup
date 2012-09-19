@@ -9,27 +9,28 @@ require "rmeetup/fetcher/comments"
 require "rmeetup/fetcher/photos"
 require "rmeetup/fetcher/open_events"
 require "rmeetup/fetcher/meetup_profiles"
+require "rmeetup/fetcher/event_infos"
 
 module RMeetup
   module Fetcher
-    
+
     class << self
       # Return a fetcher for given type
       def for(type)
         return  case type.to_sym
                 when :topics
                   Topics.new
-                when :cities      
+                when :cities
                   Cities.new
-                when :members     
+                when :members
                   Members.new
-                when :rsvps       
+                when :rsvps
                   Rsvps.new
                 when :events
                   Events.new
-                when :groups      
+                when :groups
                   Groups.new
-                when :comments    
+                when :comments
                   Comments.new
                 when :photos
                   Photos.new
@@ -37,8 +38,10 @@ module RMeetup
                   OpenEvents.new
                 when :meetup_profiles
                   MeetupProfiles.new
+                when :event_infos
+                  EventInfos.new
                 end
-      end 
+      end
     end
   end
 end

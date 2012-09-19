@@ -5,7 +5,9 @@ module RMeetup
     
     def self.build(response)
       collection = Collection.new()
-      
+
+      #puts "dumping response: #{response}"
+
       # Setup the attributes needed for WillPaginate style paging
       request_url = response['meta']['url']
       request_parameters = parse_parameters_from_url(request_url)

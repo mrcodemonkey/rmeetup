@@ -30,8 +30,8 @@ module RMeetup
   #added open_vents and rsvp
 
   class Client
-    FETCH_TYPES = [:topics, :cities, :members, :rsvps, :events, :groups, :comments, :photos, :open_events,:meetup_profiles]
-    POST_TYPES = [:rsvps]
+    FETCH_TYPES = [:topics, :cities, :members, :rsvps, :events, :groups, :comments, :photos, :open_events,:meetup_profiles, :event_infos]
+    POST_TYPES = [:rsvps,:meetup_profiles]
 
     # Meetup API Key
     # Get one at http://www.meetup.com/meetup_api/key/
@@ -47,12 +47,11 @@ module RMeetup
       # Merge in all the standard options
       # Keeping whatever was passed in
 
-
-
       options = default_options.merge(options)
 
       if FETCH_TYPES.include?(type.to_sym)
         # Get the custom fetcher used to manage options, api call to get a type of response
+
         fetcher = RMeetup::Fetcher.for(type)
         return fetcher.fetch(options)
       else
@@ -70,13 +69,20 @@ module RMeetup
       check_configuration!
       # Merge in all the standard options
       # Keeping whatever was passed in
-      options = default_options.merge(options)
+
+
+     #options = default_options.merge(options)
+
 
       if POST_TYPES.include?(type.to_sym)
 
-
+        if(type.to_sym == :rsvps)
           rsvp = RMeetup::Fetcher.for(type)
           return rsvp.rsvp_post(options)
+        elsif (type.to_sym == :meetup_profiles)
+          rsvp = RMeetup::Fetcher.for(type)
+          return rsvp.profiles_post(options)
+        end
 
 
       else
@@ -86,10 +92,62 @@ module RMeetup
     end
 
 
+    def self.refresh_token(options={})
+      url = "https://secure.meetup.com/oauth2/access"
+
+      self.send_refresh_post(url,options)
+    end
+
+
+
+
+
+
+
 
 
 
     protected
+
+
+
+    def self.send_refresh_post(url,options)
+
+      puts "in send refresh"
+
+      uri = URI.parse(url)
+      request = Net::HTTP::Post.new(uri.path)
+
+      #set form request variables www-url-encoded
+      request.set_form_data({ 'client_id' => options[:client_id] ,
+                          'client_secret' => options[:client_secret],
+                          'grant_type' => "refresh_token",
+                          'refresh_token' => options[:refresh_token]
+                        })
+
+      http_r = Net::HTTP.new(uri.host,uri.port)
+      http_r.use_ssl=true
+      http_r.ssl_version='SSLv3'
+
+      res = http_r.start {|http| http.request(request)}
+
+      puts res.to_yaml
+
+      case res
+        when Net::HTTPSuccess, Net::HTTPRedirection
+          # OK
+          puts res.to_yaml
+          return res
+        else
+          #Net::HTTPServerException: 401 "Unauthorized"
+          puts res.to_yaml
+          return res.value
+      end
+
+    end
+
+
+
       def self.default_options
         {
           :key => api_key
