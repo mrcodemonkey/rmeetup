@@ -56,6 +56,7 @@ module RMeetup
         # Format each result in the collection and return it
         collection.map!{|result| format_result(result)}
 
+        return collection
         else
           puts "not in options"
           return data
@@ -161,6 +162,8 @@ module RMeetup
           "http://api.meetup.com/2/profiles.json/"
         elsif @type == :groups
           "http://api.meetup.com/2/#{@type}.json/"
+        elsif @type == :events
+          "http://api.meetup.com/2/events.json"
         else
           "http://api.meetup.com/#{@type}.json/"
         end

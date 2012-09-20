@@ -39,9 +39,12 @@ module RMeetup
       def updated
         DateTime.parse(self.event['updated'])
       end
+
+
       def time
         DateTime.parse(self.event['time'])
       end
+
     end
   end
 end
